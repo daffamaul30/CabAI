@@ -42,19 +42,17 @@ def upload_image():
           image = Image.open(uploaded_file)
 
           st.image(image, use_container_width=True)
+      else:
+          st.image("https://raw.githubusercontent.com/daffamaul30/CabAI/main/assets/stock.jpg", use_container_width=True)
 
     # Tombol deteksi
     st.markdown(
     """
-    <script>
-      document.getElementByClass("eacrzsi2").value="New Button Text";
-    </script>
-
     <style>
     .st-emotion-cache-1gulkj5 {
         display: flex;
         flex-direction: column;
-        height: 300px;
+        height: 350px;
         justify-content: center !important;
     }
     div[data-testid="stFileUploaderDropzoneInstructions"] {
