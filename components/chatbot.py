@@ -22,6 +22,27 @@ def chatbot_popup():
       div[data-testid="stVerticalBlockBorderWrapper"] {
         padding-top: 0 !important;
       }
+
+      div[data-testid="stChatMessage"]:has(img[alt="sicabai avatar"]) {
+        flex-direction: row-reverse !important;
+      }
+
+      div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from sicabai"]) {
+        text-align: right !important;
+      }
+
+      div[data-testid="stChatMessage"]:has(div[aria-label="Chat message from sicabai"]) p {
+        border-radius: 10px !important;
+        border: 2px solid #008000 !important;
+        padding: 2px 10px !important;
+        width: fit-content !important;
+      }
+
+      div[data-testid="stMarkdownContainer"]:has(p)  {
+        display: flex;
+        justify-content: end;
+      }
+
     </style>
     """,
     unsafe_allow_html=True
@@ -31,6 +52,6 @@ def chatbot_popup():
       st.image("https://raw.githubusercontent.com/daffamaul30/CabAI/main/assets/logo.png", width=100, use_container_width=True)
     
     messages = st.container(height=400)
-    messages.chat_message("assistant").write("Hi! Ada yang bisa saya bantu?")
+    messages.chat_message("sicabai", avatar="https://raw.githubusercontent.com/daffamaul30/CabAI/main/assets/sicabai.png").write("Hi! Ada yang bisa saya bantu?")
     if prompt := st.chat_input("Tuliskan pertanyaanmu..."):
         messages.chat_message("user").write(prompt)
