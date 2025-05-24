@@ -1,0 +1,1 @@
+# Fungsi untuk load data

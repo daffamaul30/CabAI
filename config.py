@@ -1,0 +1,1 @@
+# Konfigurasi umum bisa didefinisikan di sini
