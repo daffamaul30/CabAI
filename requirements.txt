@@ -5,3 +5,4 @@ google.generativeai
 requests
 joblib
 tensorflow==2.13.0
+lotly.graph_objects
