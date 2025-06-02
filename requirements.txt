@@ -4,3 +4,5 @@ Pillow
 google.generativeai
 requests
 joblib
+tensorflow
+numpy
