@@ -40,25 +40,3 @@ def generate_response(user_input):
     })
 
     return bot_output
-
-# UI Streamlit
-st.title("💬 Sicabai: Chatbot Cabai Pakai Gemini")
-
-user_input = st.text_input("Masukkan pertanyaanmu di sini:")
-
-if st.button("Tanya Sicabai"):
-    if user_input:
-        st.session_state.chat_history.append({"role": "farmer", "message": user_input})
-        with st.spinner("Sicabai lagi mikir... 🌶️"):
-            bot_reply = generate_response(user_input)
-            st.success("✅ Sicabai menjawab:")
-            st.markdown(bot_reply)
-    else:
-        st.warning("Tolong masukkan pertanyaan terlebih dahulu.")
-
-# Menampilkan riwayat chat
-if st.session_state.chat_history:
-    st.subheader("Riwayat Obrolan:")
-    for chat in reversed(st.session_state.chat_history):
-        role_label = "👩‍🌾 Petani" if chat["role"] == "farmer" else "🌶️ Sicabai"
-        st.markdown(f"**{role_label}:** {chat['message']}")
