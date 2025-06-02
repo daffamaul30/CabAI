@@ -1,7 +1,11 @@
+# "c:\Users\daffa\AppData\Local\Programs\Python\Python312\python.exe"
+
 import streamlit as st
 from PIL import Image
-from components.image_uploader import upload_image
-from components.chatbot import chatbot_popup
+from image_uploader import upload_image
+from chatbot import chatbot_popup
+from demand_forecast import forecast
+
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -24,10 +28,12 @@ st.markdown(
 }
 #deteksi-penyakit-tanaman-cabai {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 #perkiraan-kebutuhan-pasar {
   text-align: center;
+  margin-top: 20px;
 }
 .stMainBlockContainer {
   max-width: 1280px !important;
@@ -42,14 +48,12 @@ left, middle, right = st.columns(3)
 middle.image("https://raw.githubusercontent.com/daffamaul30/CabAI/main/assets/logo.png", width=100, use_container_width=True)
 
 
+st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("#### Deteksi Penyakit Tanaman Cabai")
 col1, spacer, col2 = st.columns([1, 0.05, 1])
 
 with col1:
-    st.markdown("#### Deteksi Penyakit Tanaman Cabai")
-    image = upload_image()
-
-    if image:
-        st.success("Gambar berhasil diunggah!")
+    upload_image()
 
 with col2:
     with st.container(border=True):
@@ -59,11 +63,16 @@ with col2:
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown("#### Perkiraan Kebutuhan Pasar")
 
-st.markdown("<br>", unsafe_allow_html=True)
-chart_data = {
-    "Month": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "Value": [500, 350, 550, 400, 500, 450, 380, 580, 380, 450, 500, 550]
-}
+model, scaler, kebutuhan_asli, kebutuhan_scaled = prepare_forecast_data()
 
-# Create a simple line chart
-st.line_chart(chart_data, x="Month", y="Value")
+# Inisialisasi session_state hanya sekali
+if 'prediksi_scaled' not in st.session_state:
+    st.session_state.prediksi_scaled = []
+    st.session_state.input_scaled = kebutuhan_scaled[-12:].tolist()
+    st.session_state.tanggal_terakhir = kebutuhan_asli.index[-1]
+
+# Penjelasan
+st.write("Prediksi dilakukan per bulan berdasarkan 12 bulan terakhir.")
+
+with st.spinner("Sedang Menghitung Kebutuhan Pasar..."):
+    forecast()

@@ -3,45 +3,35 @@ from PIL import Image
 import time
 import streamlit.components.v1 as components
 
-def deteksi_penyakit():
-    st.success("Fungsi deteksi dijalankan!")
+from io import BytesIO
+from classify import classify_image_with_gemini
+
+def deteksi_penyakit(image_bytes):
+    GOOGLE_API_KEY = "AIzaSyCNQi8CXPlLeeu3j1vVu0-t2NfZf2uHLco"
+
+    with st.spinner("Sedang menganalisis gambar..."):
+        try:
+            hasil = classify_image_with_gemini(image_bytes, GOOGLE_API_KEY)
+            st.session_state.hasil_klasifikasi = hasil  # Simpan ke session_state
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan: {e}")
+
 
 def upload_image():
 
-    # components.html(
-    #     """
-    #     <style>
-          
-    #     #fileInput {
-    #         display: none !important;
-    #     }
-
-    #     .labelInput {
-    #         display: flex;
-    #         flex-direction: column;
-    #         align-items: center;
-    #         width: 100%;
-    #         height: 500px !important;
-    #         background-color: #F4F4F4;
-    #         color: #008000;
-    #         text-align: center;
-    #         border-radius: 5px;
-    #         font-size: 80px;
-    #         font-weight: 600 !important;
-    #         cursor: pointer;
-    #     }
-    #     </style>
-    #     """,
-    #     height=100
-    # )
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 1], vertical_alignment="center")
     with col1:
-      uploaded_file = st.file_uploader("", label_visibility="collapsed", type=["jpg", "jpeg", "png"])
+        uploaded_file = st.file_uploader("", label_visibility="collapsed", type=["jpg", "jpeg"])
     with col2:
       if uploaded_file is not None:
           image = Image.open(uploaded_file)
 
           st.image(image, use_container_width=True)
+
+          img_bytes = BytesIO()
+          image.save(img_bytes, format="JPEG")
+          image_bytes = img_bytes.getvalue()
       else:
           st.image("https://raw.githubusercontent.com/daffamaul30/CabAI/main/assets/stock.jpg", use_container_width=True)
 
@@ -69,7 +59,7 @@ def upload_image():
       margin-top: -65px;
       margin-bottom: 12px;
     }
-    
+
     /* Define a class for your button */
     button[kind="secondary"] {
         width: 100% !important;
@@ -83,6 +73,7 @@ def upload_image():
         cursor: pointer !important;
         transition: background-color 0.3s ease !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+        height: 40px !important;
     }
     button[kind="primary"]:hover {
         background-color: #fff !important;
@@ -90,32 +81,23 @@ def upload_image():
         border: 2px solid #008000 !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5) !important;
     }
-    .detect-button {
-        background-color: #008000;
-        color: white;
-        margin: 20px;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: 2px solid #008000;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Define the hover state for the button */
-    .detect-button:hover {
-        background-color: #fff;
-        color: #008000;
-        border: 2px solid #008000;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    }
     </style>
     """,
     unsafe_allow_html=True
 )
-    
+
     left, middle, right = st.columns(3)
     if middle.button('Deteksi Penyakit', type="primary", use_container_width=True):
-      deteksi_penyakit()
+      if uploaded_file is not None:
+          deteksi_penyakit(image_bytes)
+      else:
+          st.warning("⚠️ Silakan unggah gambar terlebih dahulu sebelum melakukan deteksi.")
 
-    # return uploaded_file if detect and uploaded_file is not None else None
+    if "hasil_klasifikasi" in st.session_state:
+        hasil = st.session_state.hasil_klasifikasi
+        st.markdown(f"**Kategori:** `{hasil.get('klasifikasi', 'Tidak diketahui')}`")
+        st.markdown(f"**Alasan:** {hasil.get('alasan', '-')}")
+        if hasil.get('klasifikasi', 'Tidak diketahui') != "Penyakit Tidak Dapat Diidentifikasi":
+          if st.button('Tanyakan Solusi', use_container_width=True):
+              # Simpan prompt ke session state
+              st.session_state.user_input = f"Tanaman cabai saya terdeteksi kategori '{hasil.get('klasifikasi', 'Tidak diketahui')}'. Apa solusi yang bisa saya lakukan?"
