@@ -4,4 +4,4 @@ Pillow
 google.generativeai
 requests
 joblib
-tensorflow
+tensorflow==2.13.0
