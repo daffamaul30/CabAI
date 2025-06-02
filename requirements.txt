@@ -5,4 +5,4 @@ google.generativeai
 requests
 joblib
 plotly.graph_objects
-tensorflow==2.13.0
+tensorflow
